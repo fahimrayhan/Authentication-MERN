@@ -1,0 +1,26 @@
+.login-form{
+    display: grid;
+    grid-template-columns: auto;
+    justify-items: center;
+}
+
+.login-form input{
+    height: 40px;
+    width: 300px;
+    margin: 10px;
+    border: 1px solid #707070;
+    border-radius: 37px;
+    padding: 10px;
+}
+.login-btn{
+    width:120px;
+    height: 40px;
+    background-color: #E1511F;
+    border-radius: 27px;
+    border:none;
+    color: #fff;
+}
+
+.login-btn:hover{
+    cursor: pointer;
+}
