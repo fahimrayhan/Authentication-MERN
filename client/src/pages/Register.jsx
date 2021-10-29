@@ -1,18 +1,20 @@
-import React, { Component, Fragment } from 'react'
+import React, { Fragment } from 'react'
 import Footer from '../components/Footer/Footer'
 import NavBar from '../components/NavBar/NavBar'
 import RegisterForm from '../components/RegisterForm/RegisterForm'
-export default class Register extends Component {
-    render() {
-        return (
+
+export default function Register() {
+
+    return (
+        <div>
             <Fragment>
                 <NavBar />
                 <h1>Register</h1>
                 <main>
-                    <RegisterForm/>
+                    <RegisterForm />
                 </main>
-                <Footer/>
+                <Footer />
             </Fragment>
-        )
-    }
+        </div>
+    )
 }
