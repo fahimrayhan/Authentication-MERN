@@ -83,6 +83,8 @@ app.post("/login",(req, res)=>{
     })
 })
 
+// Get All Users
+
 app.get("/users",(req, res)=>{
     const sql = "SELECT `username`, `email`, `phone` FROM `users`"
     db.query(sql,(err,response)=>{
@@ -95,6 +97,10 @@ app.get("/users",(req, res)=>{
         }
     })
 })
+
+// Get specific user by ID
+
+app.get("/users/:id")
 
 
 const PORT = process.env.PORT || 8081
