@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 app.use(express.json());
@@ -21,6 +22,32 @@ const db = mysql.createConnection(
         database: process.env.DATABASE,
     }
 )
+
+// JWT
+
+const generateAccessToken = (email) => {
+   return jwt.sign(email, process.env.SECRET_1, {expiresIn:'60s'})
+}
+
+const verifyJWT = (req, res, next) => {
+    const authHeader = req.headers['x-access-token']
+    const token = authHeader;
+
+    if (token == null) {
+        res.sendStatus(401)
+    }
+    else{
+        jwt.verify(token, process.env.SECRET_1, (err, decode) =>{
+            if (err) {
+                console.log(err)
+            }
+            else{
+                req.email = decode.email;
+                next()
+            }
+        } )
+    }
+}
 
 
 // Routes
@@ -60,7 +87,11 @@ app.post('/register', (req, res) => {
     })
 })
 
-app.post("/login",(req, res)=>{
+app.get('/isUserAuth', verifyJWT, (req,res)=>{
+    res.send("You are already authenticated")
+})
+
+app.post("/login", (req, res)=>{
     const {email, password} = req.body;
     const sql ="SELECT `password` FROM `users` WHERE `email` = ? "
     db.query(sql,email,(err,response) => {
@@ -70,15 +101,18 @@ app.post("/login",(req, res)=>{
         else if (response.length > 0 ){
             bcrypt.compare(password, response[0].password, (err, result)=> {
                 if (result) {
-                    res.send({ message: "Successfully Logged In" })
+                    const token = generateAccessToken({email:email});
+                    // res.json(token);a
+                    // res.send({ message: "Successfully Logged In" })
+                    res.json({auth: true, token: token, result: response})
                 }
                 else{
-                    res.send({ message: "Wrong Password" })
+                    res.send({ auth: false, message: "Wrong Password" })
                 }
             });
         }
         else{
-            res.send({ message: "User Does Not Exist" })
+            res.send({ auth: false, message: "User Does Not Exist" })
         }
     })
 })
@@ -92,7 +126,7 @@ app.get("/users",(req, res)=>{
             console.log(err)
         }
         else{
-            console.log(response)
+            // console.log(response)
             res.send(response)
         }
     })
@@ -100,7 +134,10 @@ app.get("/users",(req, res)=>{
 
 // Get specific user by ID
 
-app.get("/users/:id")
+app.get("/profile", verifyJWT, (req, res)=>{
+    console.log("Hello")
+    res.send({ message: "hello"})
+})
 
 
 const PORT = process.env.PORT || 8081
